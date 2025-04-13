@@ -1,0 +1,65 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: Checkout
+    displayName: 'Checkout Source Code'
+    jobs:
+      - job: CheckoutJob
+        steps:
+          - checkout: self
+            clean: true
+
+  - stage: Build
+    displayName: 'Build Stage'
+    dependsOn: Checkout
+    jobs:
+      - job: BuildJob
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.x'
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
+          - script: dotnet build --configuration $(buildConfiguration)
+            displayName: 'Build the project'
+
+  - stage: CodeAnalysis
+    displayName: 'Code Analysis (SonarQube)'
+    dependsOn: Build
+    jobs:
+      - job: AnalysisJob
+        steps:
+          - script: echo "This is a placeholder for SonarQube analysis."
+            displayName: 'Run SonarQube (Mocked)'
+
+  - stage: Test
+    displayName: 'Test Stage'
+    dependsOn: Build
+    jobs:
+      - job: TestJob
+        steps:
+          - script: |
+              dotnet test --configuration $(buildConfiguration) --collect:"XPlat Code Coverage"
+            displayName: 'Run unit tests and collect coverage'
+
+  - stage: Artifact
+    displayName: 'Publish Artifact'
+    dependsOn: Test
+    jobs:
+      - job: ArtifactJob
+        steps:
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
