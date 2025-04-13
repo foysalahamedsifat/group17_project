@@ -1,0 +1,51 @@
+resources:
+  pipelines:
+    - pipeline: ciPipeline  # Name of the CI pipeline (you can use any name here)
+      source: 'foysalahamedsifat.group17_project'  # Replace with your actual CI pipeline name
+      trigger:
+        branches:
+          include:
+            - main  # Trigger on 'main' branch (or adjust to your branch)
+
+trigger: none  # We will manually trigger or use release pipelines
+
+stages:
+  - stage: Deploy
+    displayName: 'Deploy to IIS'
+    jobs:
+      - deployment: DeployWebApp
+        environment: 'development'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Download the build artifact from the CI pipeline
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: 'specific'
+                    project: '$(System.TeamProject)'
+                    pipeline: '8'  # Replace with actual pipeline ID if needed
+                    buildVersionToDownload: 'latest'
+                    artifactName: 'drop'
+                    downloadPath: '$(System.ArtifactsDirectory)'
+
+                # Extract files from the downloaded artifact
+                - task: ExtractFiles@1
+                  inputs:
+                    archiveFilePatterns: '$(System.ArtifactsDirectory)/drop/App.zip'
+                    destinationFolder: '$(System.ArtifactsDirectory)/deploy'
+                    cleanDestinationFolder: true
+
+                # Copy files to the IIS server directory
+                - task: CopyFiles@2
+                  inputs:
+                    SourceFolder: '$(System.ArtifactsDirectory)/deploy'
+                    Contents: '**'
+                    TargetFolder: 'C:\inetpub\wwwroot\Final'
+
+                # Reset IIS after the deployment
+                - task: PowerShell@2
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      iisreset

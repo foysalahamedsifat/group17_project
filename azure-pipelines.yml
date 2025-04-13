@@ -48,8 +48,7 @@ stages:
     jobs:
       - job: TestJob
         steps:
-          - script: |
-              dotnet test --configuration $(buildConfiguration) --collect:"XPlat Code Coverage"
+          - script: dotnet test ManuelToleran_MVC_AgileProcess/ManuelToleran_MVC_AgileProcess.sln --configuration $(buildConfiguration) --collect:"XPlat Code Coverage"
             displayName: 'Run unit tests and collect coverage'
 
   - stage: Artifact
@@ -58,8 +57,24 @@ stages:
     jobs:
       - job: ArtifactJob
         steps:
+          # 📦 Publish the project
+          - script: dotnet publish ManuelToleran_MVC_AgileProcess/ManuelToleran_MVC_AgileProcess.sln --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish
+            displayName: 'Publish the project'
+
+          # 🗜️ Create a ZIP file
+          - task: PowerShell@2
+            displayName: 'Create ZIP package'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $source = "$(Build.ArtifactStagingDirectory)\publish"
+                $zipPath = "$(Build.ArtifactStagingDirectory)\App.zip"
+                Add-Type -AssemblyName System.IO.Compression.FileSystem
+                [System.IO.Compression.ZipFile]::CreateFromDirectory($source, $zipPath)
+
+          # 🚀 Publish the ZIP file
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)\App.zip'
               ArtifactName: 'drop'
               publishLocation: 'Container'
