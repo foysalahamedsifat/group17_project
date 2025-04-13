@@ -30,7 +30,7 @@ stages:
               version: '8.x'
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
-          - script: dotnet build --configuration $(buildConfiguration)
+          - script: dotnet build ManuelToleran_MVC_AgileProcess/ManuelToleran_MVC_AgileProcess.sln --configuration $(buildConfiguration)
             displayName: 'Build the project'
 
   - stage: CodeAnalysis
