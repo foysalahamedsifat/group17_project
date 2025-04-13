@@ -41,6 +41,44 @@
             @Html.DisplayFor(model => model.Price)
         </dd>
     </dl>
+    <hr />
+    <h4>Submit a Review</h4>
+    <form asp-action="SubmitReview" method="post">
+        <input type="hidden" name="MovieId" value="@Model.Id" />
+        <div class="form-group">
+            <label>Rating (1-5)</label>
+            <input type="number" name="Rating" min="1" max="5" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>Comment</label>
+            <textarea name="Comment" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Your Name (Optional)</label>
+            <input type="text" name="User" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+    </form>
+
+    <hr />
+    <h4>Reviews</h4>
+    @if (Model.Reviews != null && Model.Reviews.Any())
+    {
+        <ul>
+            @foreach (var review in Model.Reviews)
+            {
+                <li>
+                    <strong>@review.Rating ★</strong> - @review.Comment<br />
+                    <small>By @review.User on @review.Date.ToShortDateString()</small>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No reviews yet.</p>
+    }
+
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
