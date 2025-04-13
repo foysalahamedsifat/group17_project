@@ -10,5 +10,6 @@ namespace ManuelToleran_MVC_AgileProcess.Models
         public string? MovieGenre { get; set; }
         public string? SearchString { get; set; }
         public string? ReleaseYear { get; set; }
+        public string? SortOrder { get; set; }
     }
 }

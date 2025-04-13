@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ManuelToleran_MVC_AgileProcess.Data;
 using ManuelToleran_MVC_AgileProcess.Models;
+using Microsoft.Data.SqlClient;
 
 namespace ManuelToleran_MVC_AgileProcess.Controllers
 {
@@ -20,7 +21,7 @@ namespace ManuelToleran_MVC_AgileProcess.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index(string? movieGenre, string? searchString, string? releaseYear)
+        public async Task<IActionResult> Index(string? movieGenre, string? searchString, string? releaseYear, string? sortOrder)
         {
             if (_context.Movie == null)
             {
@@ -54,6 +55,14 @@ namespace ManuelToleran_MVC_AgileProcess.Controllers
             {
                 movies = movies.Where(x => x.ReleaseDate.Year.ToString() == releaseYear);
             }
+
+            // Apply sorting
+            movies = sortOrder switch
+            {
+                "Title" => movies.OrderBy(m => m.Title),
+                "Rating" => movies.OrderByDescending(m => m.Rating),
+                _ => movies
+            };
 
             var movieGenreVM = new MovieGenreViewModel
             {

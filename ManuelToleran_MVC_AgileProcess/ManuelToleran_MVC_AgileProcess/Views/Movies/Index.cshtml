@@ -19,6 +19,12 @@
             <option value="">All Years</option>
         </select>
 
+        <select asp-for="SortOrder">
+            <option value="">Sort By</option>
+            <option value="Title">Title</option>
+            <option value="Rating">Rating</option>
+        </select>
+
         <label>Title: <input type="text" asp-for="SearchString" /></label>
         <input type="submit" value="Filter" />
     </p>
