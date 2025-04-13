@@ -49,7 +49,7 @@ stages:
       - job: TestJob
         steps:
           - script: |
-              dotnet test --configuration $(buildConfiguration) --collect:"XPlat Code Coverage"
+              dotnet test ManuelToleran_MVC_AgileProcess/ManuelToleran_MVC_AgileProcess.sln --configuration $(buildConfiguration) --collect:"XPlat Code Coverage"
             displayName: 'Run unit tests and collect coverage'
 
   - stage: Artifact
