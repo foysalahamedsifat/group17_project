@@ -29,5 +29,8 @@ namespace ManuelToleran_MVC_AgileProcess.Models
         [StringLength(5)]
         [Required]
         public string? Rating { get; set; }
+
+        public ICollection<Review>? Reviews { get; set; }
+
     }
 }

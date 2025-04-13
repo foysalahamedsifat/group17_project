@@ -4,6 +4,7 @@ using ManuelToleran_MVC_AgileProcess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManuelToleran_MVC_AgileProcess.Migrations
 {
     [DbContext(typeof(ManuelToleran_MVC_AgileProcessContext))]
-    partial class ManuelToleran_MVC_AgileProcessContextModelSnapshot : ModelSnapshot
+    [Migration("20250413154007_review-functionality")]
+    partial class reviewfunctionality
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
