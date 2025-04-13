@@ -20,17 +20,23 @@ namespace ManuelToleran_MVC_AgileProcess.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index(string movieGenre, string searchString)
+        public async Task<IActionResult> Index(string? movieGenre, string? searchString, string? releaseYear)
         {
             if (_context.Movie == null)
             {
                 return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
             }
 
-            // Use LINQ to get list of genres.
-            IQueryable<string> genreQuery = from m in _context.Movie
-                                            orderby m.Genre
-                                            select m.Genre;
+            // Query to get all genres and years
+            var genresQuery = from m in _context.Movie
+                              orderby m.Genre
+                              select m.Genre;
+
+            var yearsQuery = from m in _context.Movie
+                             orderby m.ReleaseDate.Year
+                             select m.ReleaseDate.Year.ToString();
+
+            // Query to get filtered movies
             var movies = from m in _context.Movie
                          select m;
 
@@ -44,10 +50,16 @@ namespace ManuelToleran_MVC_AgileProcess.Controllers
                 movies = movies.Where(x => x.Genre == movieGenre);
             }
 
+            if (!string.IsNullOrEmpty(releaseYear))
+            {
+                movies = movies.Where(x => x.ReleaseDate.Year.ToString() == releaseYear);
+            }
+
             var movieGenreVM = new MovieGenreViewModel
             {
-                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                Movies = await movies.ToListAsync()
+                Movies = await movies.ToListAsync(),
+                Genres = new SelectList(await genresQuery.Distinct().ToListAsync()),
+                Years = new SelectList(await yearsQuery.Distinct().ToListAsync()),
             };
 
             return View(movieGenreVM);
