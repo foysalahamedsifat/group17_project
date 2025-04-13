@@ -15,5 +15,7 @@ namespace ManuelToleran_MVC_AgileProcess.Data
         }
 
         public DbSet<ManuelToleran_MVC_AgileProcess.Models.Movie> Movie { get; set; } = default!;
+        public DbSet<Review> Review { get; set; }
+
     }
 }

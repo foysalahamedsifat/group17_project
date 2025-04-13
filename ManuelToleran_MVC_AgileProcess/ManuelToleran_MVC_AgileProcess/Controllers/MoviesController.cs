@@ -82,7 +82,7 @@ namespace ManuelToleran_MVC_AgileProcess.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var movie = await _context.Movie.Include(m => m.Reviews)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
@@ -202,5 +202,26 @@ namespace ManuelToleran_MVC_AgileProcess.Controllers
         {
             return _context.Movie.Any(e => e.Id == id);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitReview([Bind("MovieId,Rating,Comment,User")] Review review)
+        {
+            review.Date = DateTime.Now;
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(review);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Details), new { id = review.MovieId });
+            }
+
+            // Reload movie with reviews in case of error
+            var movie = await _context.Movie
+                .Include(m => m.Reviews)
+                .FirstOrDefaultAsync(m => m.Id == review.MovieId);
+
+            return View("Details", movie);
+        }
+
     }
 }
